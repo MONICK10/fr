@@ -25,7 +25,6 @@ export class SceneManager {
 
     this.renderer = this._createRenderer();
 
-    this._addLights();
     this._addParticles();
 
     window.addEventListener("resize", () => this._onResize());
@@ -75,19 +74,6 @@ export class SceneManager {
     } catch (e) {
       return false;
     }
-  }
-
-  _addLights() {
-    this.ambient = new THREE.AmbientLight(0x8fa3ff, 0.55);
-    this.scene.add(this.ambient);
-
-    this.keyLight = new THREE.DirectionalLight(0xffe3b0, 0.9);
-    this.keyLight.position.set(2, 4, 3);
-    this.scene.add(this.keyLight);
-
-    this.rimLight = new THREE.PointLight(0x7a8cff, 0.6, 40);
-    this.rimLight.position.set(-4, 2, -2);
-    this.scene.add(this.rimLight);
   }
 
   _addParticles() {

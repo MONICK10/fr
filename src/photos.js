@@ -53,50 +53,53 @@ export class PhotoField {
     this._buildExtras();
   }
 
-  _buildFrame({ image, position, rotationY, tilt, width, height, placeholderLabel, placeholderHue }) {
+  // maxSize is the longest side of the photo, in world units — the photo
+  // is fit inside that box keeping its real aspect ratio, so a portrait
+  // phone photo stays portrait instead of being stretched into a square.
+  _buildFrame({ image, position, rotationY, tilt, maxSize, placeholderLabel, placeholderHue }) {
     const group = new THREE.Group();
     group.position.copy(position);
     group.rotation.y = rotationY;
     group.rotation.z = tilt;
 
-    const borderPad = 0.16 * (width / 2.6);
+    const borderPad = maxSize * 0.07;
+    const shadowPad = borderPad * 1.6;
 
     // drop shadow, slightly behind and offset
-    const shadowGeo = new THREE.PlaneGeometry(
-      width + borderPad * 2.6,
-      height + borderPad * 2.6
-    );
     const shadowMat = new THREE.MeshBasicMaterial({
       color: 0x000000,
       transparent: true,
       opacity: 0.35,
     });
-    const shadow = new THREE.Mesh(shadowGeo, shadowMat);
+    const shadow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), shadowMat);
     shadow.position.set(0.06, -0.08, -0.02);
     group.add(shadow);
 
-    // white printed-photo border
-    const frameGeo = new THREE.PlaneGeometry(width + borderPad * 2, height + borderPad * 2);
-    const frameMat = new THREE.MeshStandardMaterial({
-      color: 0xfaf7f0,
-      roughness: 0.85,
-      metalness: 0,
-    });
-    const frame = new THREE.Mesh(frameGeo, frameMat);
+    // white printed-photo border — unlit, so it reads as a flat paper
+    // border instead of reacting to the scene's 3D lighting.
+    const frameMat = new THREE.MeshBasicMaterial({ color: 0xfaf7f0 });
+    const frame = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), frameMat);
     frame.position.z = -0.01;
     group.add(frame);
 
-    // the photo itself
-    const photoGeo = new THREE.PlaneGeometry(width, height);
-    const photoMat = new THREE.MeshStandardMaterial({
+    // the photo itself — unlit too, so it shows at the image's own
+    // brightness/colour instead of being dimmed by directional lights.
+    const photoMat = new THREE.MeshBasicMaterial({
       color: 0xffffff,
-      roughness: 0.7,
-      metalness: 0,
       transparent: true,
       opacity: 0.98,
     });
-    const photo = new THREE.Mesh(photoGeo, photoMat);
+    const photo = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), photoMat);
     group.add(photo);
+
+    const applyAspect = (aspect) => {
+      const w = aspect >= 1 ? maxSize : maxSize * aspect;
+      const h = aspect >= 1 ? maxSize / aspect : maxSize;
+      photo.scale.set(w, h, 1);
+      frame.scale.set(w + borderPad * 2, h + borderPad * 2, 1);
+      shadow.scale.set(w + shadowPad * 2, h + shadowPad * 2, 1);
+    };
+    applyAspect(0.75); // reasonable guess for a phone photo until it loads
 
     loader.load(
       withBase(image),
@@ -104,12 +107,16 @@ export class PhotoField {
         tex.colorSpace = THREE.SRGBColorSpace;
         photoMat.map = tex;
         photoMat.needsUpdate = true;
+        if (tex.image?.width && tex.image?.height) {
+          applyAspect(tex.image.width / tex.image.height);
+        }
       },
       undefined,
       () => {
         const tex = placeholderTexture(placeholderHue, placeholderLabel);
         photoMat.map = tex;
         photoMat.needsUpdate = true;
+        applyAspect(1); // placeholder canvas is square
       }
     );
 
@@ -129,8 +136,7 @@ export class PhotoField {
         position: pos,
         rotationY: side * 0.35,
         tilt,
-        width: 2.6,
-        height: 2.6,
+        maxSize: 3.4,
         placeholderLabel: String(index + 1).padStart(2, "0"),
         placeholderHue: index,
       });
@@ -160,8 +166,7 @@ export class PhotoField {
         position: pos,
         rotationY: extra.side * 0.5,
         tilt,
-        width: 1.9,
-        height: 1.9,
+        maxSize: 2.4,
         placeholderLabel: "+",
         placeholderHue: 20 + i * 11,
       });
@@ -186,11 +191,11 @@ export class PhotoField {
       entry.group.rotation.z = entry.baseRotZ + Math.sin(time * 0.2 + entry.floatSeed) * 0.02;
     }
 
-    // brighten when near, keeping each material's own hue
-    const brightness = 0.55 + nearness * 0.55;
-    entry.photoMat.opacity = 0.85 + nearness * 0.15;
+    // brighten slightly when near, but never let a photo go dim/murky
+    const brightness = 0.82 + nearness * 0.18;
+    entry.photoMat.opacity = 0.92 + nearness * 0.08;
     entry.photoMat.color.setScalar(Math.min(brightness, 1));
-    const frameBrightness = Math.min(0.78 + nearness * 0.22, 1);
+    const frameBrightness = Math.min(0.9 + nearness * 0.1, 1);
     entry.frameMat.color.copy(entry.frameBaseColor).multiplyScalar(frameBrightness);
 
     return nearness;
