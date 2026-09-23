@@ -12,6 +12,7 @@ import { UI } from "./ui.js";
 import { stanzas } from "./poem.js";
 import { STANZA_COUNT } from "./layout.js";
 import { initGate } from "./gate.js";
+import { withBase } from "./base.js";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -39,7 +40,7 @@ function setupScrollSpacer() {
 
 function setupMusic() {
   if (!ENABLE_MUSIC) return null;
-  const audio = new Audio("/music.mp3");
+  const audio = new Audio(withBase("/music.mp3"));
   audio.loop = true;
   audio.volume = 0.5;
   ui.showMuteButton((muted) => {
@@ -136,7 +137,7 @@ function startFallback() {
     img.className = "fallback-photo";
     img.loading = "lazy";
     img.alt = `Photo ${i + 1}`;
-    img.src = stanza.image;
+    img.src = withBase(stanza.image);
     img.onerror = () => {
       img.style.background = `hsl(${(i * 37) % 360}, 35%, 25%)`;
     };

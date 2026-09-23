@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { stanzas } from "./poem.js";
 import { photoWorldPosition, SEGMENT_LENGTH, curveOffsetAt } from "./layout.js";
+import { withBase } from "./base.js";
 
 const NEAR_RANGE = SEGMENT_LENGTH * 0.85; // distance at which a photo is "active"
 const loader = new THREE.TextureLoader();
@@ -98,7 +99,7 @@ export class PhotoField {
     group.add(photo);
 
     loader.load(
-      image,
+      withBase(image),
       (tex) => {
         tex.colorSpace = THREE.SRGBColorSpace;
         photoMat.map = tex;
