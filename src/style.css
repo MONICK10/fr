@@ -1,0 +1,440 @@
+:root {
+  --sky-hex: #0b1026;
+  --text-light: #f7f2e7;
+  --text-dark: #3a2c1a;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overscroll-behavior: none;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  background: #0b1026;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+body {
+  font-family: "Poppins", system-ui, sans-serif;
+  color: var(--text-light);
+}
+
+h1,
+.intro-title {
+  font-family: "Playfair Display", Georgia, serif;
+}
+
+#app {
+  position: relative;
+  width: 100%;
+}
+
+#scene-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  display: block;
+  z-index: 0;
+}
+
+#scroll-spacer {
+  position: relative;
+  width: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ---------- Intro screen ---------- */
+
+.screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 10;
+  padding: max(1.5rem, var(--safe-top)) max(1.5rem, var(--safe-right))
+    max(1.5rem, var(--safe-bottom)) max(1.5rem, var(--safe-left));
+}
+
+#intro {
+  background: radial-gradient(ellipse at 50% 30%, #16204a 0%, #0b1026 70%);
+  transition: opacity 0.7s ease;
+}
+
+#intro.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.stars-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.star {
+  position: absolute;
+  width: var(--s, 2px);
+  height: var(--s, 2px);
+  background: #ffffff;
+  border-radius: 50%;
+  opacity: 0.6;
+  animation: twinkle 3.2s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+.intro-title {
+  font-size: clamp(2.4rem, 10vw, 4rem);
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 24px rgba(255, 220, 160, 0.25);
+}
+
+.intro-sub {
+  font-size: clamp(0.9rem, 3.6vw, 1.1rem);
+  opacity: 0.75;
+  margin: 0 0 1.25rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.intro-arrow {
+  font-size: 1.6rem;
+  opacity: 0.7;
+  animation: bounce 1.8s ease-in-out infinite;
+  margin-bottom: 2rem;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.begin-btn {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0.85rem 1.8rem;
+  font-family: inherit;
+  font-size: clamp(0.95rem, 3.8vw, 1.05rem);
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-light);
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+}
+
+.begin-btn:active {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ---------- Password gate ---------- */
+
+.gate-screen {
+  z-index: 20;
+  background: radial-gradient(ellipse at 50% 30%, #16204a 0%, #0b1026 70%);
+  transition: opacity 0.7s ease;
+}
+
+.gate-screen.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.gate-screen.shake {
+  animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-8px);
+  }
+  40%,
+  80% {
+    transform: translateX(8px);
+  }
+}
+
+.gate-form {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.gate-input {
+  min-height: 44px;
+  padding: 0.7rem 1rem;
+  font-family: inherit;
+  font-size: clamp(0.95rem, 3.8vw, 1.05rem);
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-light);
+  text-align: center;
+  width: min(60vw, 220px);
+}
+
+.gate-input::placeholder {
+  color: rgba(247, 242, 231, 0.45);
+}
+
+.gate-input:focus {
+  outline: 2px solid rgba(255, 230, 173, 0.6);
+  outline-offset: 2px;
+}
+
+.gate-error {
+  min-height: 1.4em;
+  margin-top: 0.9rem;
+  font-size: clamp(0.8rem, 3.2vw, 0.9rem);
+  color: #ffb3a0;
+}
+
+body.locked #scene-canvas,
+body.locked #hud,
+body.locked #scroll-spacer {
+  display: none;
+}
+
+/* ---------- HUD (stanza text + dots) ---------- */
+
+#hud {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  padding: max(1.25rem, var(--safe-top)) max(1.25rem, var(--safe-right))
+    max(1.25rem, var(--safe-bottom)) max(1.25rem, var(--safe-left));
+}
+
+.stanza-panel {
+  position: absolute;
+  left: max(1.25rem, var(--safe-left));
+  right: max(1.25rem, var(--safe-right));
+  bottom: max(2.2rem, var(--safe-bottom));
+  max-width: 82vw;
+  margin: 0 auto;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  padding: 0.9rem 1.1rem;
+  border-radius: 14px;
+  background: rgba(10, 12, 30, 0.28);
+  backdrop-filter: blur(3px);
+}
+
+.stanza-panel.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.stanza-index {
+  font-size: clamp(11px, 3vw, 13px);
+  opacity: 0.55;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.35rem;
+}
+
+.stanza-line {
+  font-size: clamp(16px, 4.4vw, 20px);
+  font-weight: 300;
+  line-height: 1.7;
+  margin: 0 0 0.15rem;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+
+.stanza-line.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+body.sky-bright {
+  color: var(--text-dark);
+}
+
+body.sky-bright .stanza-line {
+  text-shadow: 0 1px 10px rgba(255, 255, 255, 0.35);
+}
+
+body.sky-bright .stanza-panel {
+  background: rgba(255, 245, 225, 0.35);
+}
+
+.progress-dots {
+  position: absolute;
+  right: max(0.9rem, var(--safe-right));
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  transition: background 0.4s ease, box-shadow 0.4s ease, transform 0.4s ease;
+}
+
+body.sky-bright .dot {
+  background: rgba(58, 44, 26, 0.3);
+}
+
+.dot.active {
+  background: #ffe6ad;
+  box-shadow: 0 0 10px 2px rgba(255, 220, 160, 0.7);
+  transform: scale(1.3);
+}
+
+.mute-btn {
+  position: absolute;
+  top: max(1rem, var(--safe-top));
+  right: max(1rem, var(--safe-right));
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text-light);
+  font-size: 1.1rem;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* ---------- Outro ---------- */
+
+#outro {
+  background: transparent;
+  z-index: 8;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+#outro.visible {
+  opacity: 1;
+}
+
+.outro-text {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(1.2rem, 5vw, 1.7rem);
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* ---------- No-WebGL fallback ---------- */
+
+.fallback-mode #scene-canvas,
+.fallback-mode #hud,
+.fallback-mode #scroll-spacer {
+  display: none;
+}
+
+.fallback {
+  position: relative;
+  z-index: 2;
+  background: linear-gradient(180deg, #0b1026 0%, #3a3a6e 45%, #e8875a 80%, #f5c15c 100%);
+  padding: max(2rem, var(--safe-top)) max(1.25rem, var(--safe-right)) max(3rem, var(--safe-bottom))
+    max(1.25rem, var(--safe-left));
+}
+
+.fallback-card {
+  max-width: 82vw;
+  margin: 0 auto 4.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.fallback-card.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fallback-card.right {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.fallback-photo {
+  width: min(78vw, 320px);
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border: 10px solid #faf7f0;
+  border-radius: 4px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.fallback-text .stanza-line {
+  color: var(--text-light);
+}
+
+.fallback-outro {
+  text-align: center;
+  margin-top: 2rem;
+  color: var(--text-dark);
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-arrow {
+    animation: none;
+  }
+  .star {
+    animation: none;
+    opacity: 0.5;
+  }
+  .fallback-card {
+    transition: opacity 0.4s ease;
+    transform: none;
+  }
+}

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0b1026" />
+    <meta name="description" content="For Mahi — a small poem, told in 3D." />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%BC%3C/text%3E%3C/svg%3E"
+    />
+    <title>For Mahi</title>
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="scene-canvas"></canvas>
+
+      <div id="gate" class="screen gate-screen">
+        <div class="stars-layer" aria-hidden="true"></div>
+        <h1 class="intro-title">For Mahi</h1>
+        <p class="intro-sub">Enter the password</p>
+        <form id="gate-form" class="gate-form" autocomplete="off">
+          <input
+            id="gate-input"
+            class="gate-input"
+            type="password"
+            inputmode="text"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
+            placeholder="password"
+            aria-label="Password"
+          />
+          <button type="submit" class="begin-btn">Unlock</button>
+        </form>
+        <p id="gate-error" class="gate-error" aria-live="polite"></p>
+      </div>
+
+      <div id="intro" class="screen">
+        <div class="stars-layer" aria-hidden="true"></div>
+        <h1 class="intro-title">For Mahi</h1>
+        <p class="intro-sub">Swipe up</p>
+        <div class="intro-arrow" aria-hidden="true">&#8593;</div>
+        <button id="begin-btn" class="begin-btn" type="button">Tap to begin</button>
+      </div>
+
+      <div id="hud">
+        <div class="stanza-panel" id="stanza-panel" aria-live="polite">
+          <div class="stanza-index" id="stanza-index"></div>
+          <div class="stanza-lines" id="stanza-lines"></div>
+        </div>
+        <div class="progress-dots" id="progress-dots"></div>
+        <button id="mute-btn" class="mute-btn" type="button" hidden>&#128266;</button>
+      </div>
+
+      <div id="outro" class="screen" hidden>
+        <p class="outro-text">- from your friend</p>
+      </div>
+
+      <div id="scroll-spacer"></div>
+    </div>
+
+    <noscript>
+      <p style="padding: 2rem; font-family: sans-serif">
+        Please enable JavaScript to see this page.
+      </p>
+    </noscript>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
